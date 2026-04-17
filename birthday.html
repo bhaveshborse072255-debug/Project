@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Dark red/black gradient background */
+            background: radial-gradient(circle at center, #3a0010 0%, #0a0005 100%);
+            color: #ffe6e6;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating Hearts */
+        .heart-bg {
+            position: absolute;
+            bottom: -10vh;
+            font-size: 1.5rem;
+            color: #ff3366;
+            opacity: 0.6;
+            animation: floatUp linear infinite;
+            z-index: 0;
+            user-select: none;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
+        }
+
+        /* Container for screens */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        /* Screen Setup */
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.8s ease-in-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Typography */
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            color: #ffb3c6;
+            margin-bottom: 10px;
+        }
+        
+        h1 { font-size: 2.8rem; }
+        h2 { font-size: 2rem; }
+        
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #ffccd5;
+        }
+
+        .heart-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Images / GIFs */
+        .hero-img {
+            width: 180px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Buttons */
+        button {
+            background: #ff3366;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #ff0040;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 51, 102, 0.6);
+        }
+
+        /* Typing Text */
+        .typing-container {
+            min-height: 150px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        /* Gallery Grid */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 5px 5px 15px 5px;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            color: #333;
+            transform: rotate(-2deg);
+            transition: transform 0.3s;
+        }
+
+        .polaroid:nth-child(even) { transform: rotate(2deg); }
+        .polaroid:hover { transform: scale(1.1) rotate(0); z-index: 2; }
+
+        .polaroid img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
+
+        .polaroid p {
+            margin: 5px 0 0 0;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #555;
+            line-height: 1;
+        }
+
+        /* List items for 'Why You're Special' */
+        ul {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        ul li {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        ul li::before {
+            content: '❤️';
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Gift Box */
+        .gift-box {
+            font-size: 5rem;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: transform 0.2s;
+            animation: bounce 2s infinite;
+        }
+
+        .gift-box:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <section id="screen-1" class="screen active">
+            <div class="heart-icon">❤️</div>
+            <img src="c:\Users\bhavesh ganesh borse\Downloads\WhatsApp Image 2026-04-17 at 18.10.18.jpeg",
+           width="220"
+                 height="200">
+            <h1>Hey, My Bestfriend
+            <p>I built this little universe to tell you how much you mean to me.</p>
+            <button onclick="nextScreen('screen-1', 'screen-2')">Enter Our World</button>
+        </section>
+
+        <section id="screen-2" class="screen">
+            <div class="heart-icon">❤️</div>
+            <h2>Setting the Mood</h2>
+            <p>A song that reminds me of your smile.</p>
+<video width="300"height="200"controls style="transform: rotate(180px)>
+  
+  <source src=":\Users\bhavesh ganesh borse\Downloads\WhatsApp Video 2026-04-17 at 21.37.53.mp4Z">
+  <source src="c:\Users\bhavesh ganesh borse\Downloads\WhatsApp Video 2026-04-17 at 21.37.53.mp4">
+</video>
+            
+            <button onclick="nextScreen('screen-2', 'screen-3'); startTyping();">Play Music & Continue</button>
+            </section>
+
+        <section id="screen-3" class="screen">
+            <div class="typing-container">
+                <span id="typed-text"></span><span id="cursor">|</span>
+            </div>
+            <button id="btn-3" style="display: none;" onclick="nextScreen('screen-3', 'screen-4')">Look at my memories</button>
+        </section>
+
+        <section id="screen-4" class="screen">
+            <h2>Moments with You</h2>
+            <div class="gallery">
+                <div class="polaroid">
+                    <img src="c:\Users\bhavesh ganesh borse\Downloads\WhatsApp Image 2026-04-17 at 19.04.56.jpeg" alt="Pic">
+                    <p>Our First Date</p>
+                </div>
+                <div class="polaroid">
+                    <img src="c:\Users\bhavesh ganesh borse\Downloads\WhatsApp Image 2026-04-17 at 19.04.56 (1).jpeg" alt="Pic">
+                    <p>That Beautiful Day</p>
+                </div>
+                <div class="polaroid">
+                    <img src="c:\Users\bhavesh ganesh borse\Downloads\WhatsApp Image 2026-04-17 at 20.41.44.jpeg" alt="Pic">
+                    <p>My Favorite Smile</p>
+                </div>
+                <div class="polaroid">
+                    <img src="c:\Users\bhavesh ganesh borse\Downloads\WhatsApp Image 2026-04-17 at 19.04.57.jpeg" alt="Pic">
+                    <p>Always Together</p>
+                </div>
+                <div class="polaroid">
+                    <img src="c:\Users\bhavesh ganesh borse\Downloads\WhatsApp Image 2026-04-17 at 19.04.57 (1).jpeg">
+                    <p>Just Us Two</p>
+                </div>
+                <div class="polaroid">
+                    <img src="c:\Users\bhavesh ganesh borse\Downloads\WhatsApp Image 2026-04-17 at 19.04.58.jpeg" alt="Pic">
+                    <p>Reason to Go...</p>
+                </div>
+            </div>
+            <button onclick="nextScreen('screen-4', 'screen-5')">Keep Going</button>
+        </section>
+
+        <section id="screen-5" class="screen">
+            <div class="heart-icon">❤️</div>
+            <img src="c:\Users\bhavesh ganesh borse\Downloads\119.jpg" class="hero-img" alt="Couple">
+            <h2>Why You're Special</h2>
+            <ul>
+                <li>Your Smile Hayyee!
+                <li>You are My Bubu Don
+                <li>You are my safest place.</li>
+            </ul>
+            <button onclick="nextScreen('screen-5', 'screen-6')">Almost there...</button>
+        </section>
+
+        <section id="screen-6" class="screen">
+            <h2>A Small Gift...</h2>
+            <p>Click the box to open it!</p>
+            <div class="gift-box" onclick="openGift()">🎁</div>
+        </section>
+
+        <section id="screen-7" class="screen">
+            <div class="heart-icon">🎂</div>
+            <h1>Happy Birthday Prachu!❤️
+            <p style="font-style: italic;">To the most amazing woman. May your year be as radiant as your soul. I love you!</p>
+            <button onclick="alert('I love you endlessly! ❤️')">Unlimited Blessing
+        </section>
+
+    </div>
+
+    <script>
+        // Background Floating Hearts
+        function createHearts() {
+            const body = document.querySelector('body');
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.classList.add('heart-bg');
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 4) + 's'; // 4s to 7s
+                heart.style.fontSize = (Math.random() * 1 + 0.8) + 'rem';
+                body.appendChild(heart);
+                
+                setTimeout(() => { heart.remove(); }, 7000);
+            }, 400); // Spawn rate
+        }
+        createHearts();
+
+        // Screen Navigation
+        function nextScreen(currentId, nextId) {
+            document.getElementById(currentId).classList.remove('active');
+            document.getElementById(nextId).classList.add('active');
+        }
+
+        // Typing Effect
+        const message = "Every single day, I find new reasons to fall for you. You aren't just My Bestfriend; You're My Soulmate, My Partner in crime, and My Home. Today is all about you, and I hope this makes you smile just a little bit...";
+        let i = 0;
+        let isTyping = false;
+
+        function startTyping() {
+            if (isTyping) return;
+            isTyping = true;
+            document.getElementById('typed-text').innerHTML = "";
+            i = 0;
+            typeWriter();
+        }
+
+        function typeWriter() {
+            if (i < message.length) {
+                document.getElementById("typed-text").innerHTML += message.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50); // Typing speed
+            } else {
+                document.getElementById('cursor').style.display = 'none';
+                document.getElementById('btn-3').style.display = 'inline-block';
+            }
+        }
+
+        // Open Gift / Confetti
+        function openGift() {
+            // Trigger Confetti
+            var duration = 3 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff3366', '#ffb3c6', '#ffffff']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff3366', '#ffb3c6', '#ffffff']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            // Move to final screen
+            setTimeout(() => {
+                nextScreen('screen-6', 'screen-7');
+            }, 500);
+        }
+    </script>
+</body>
+</html>
